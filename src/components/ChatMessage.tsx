@@ -6,7 +6,9 @@ import {
   Leaf,
   User,
   Utensils,
-  MapPin
+  MapPin,
+  Stethoscope2, // Alternative medical icon
+  Flask, // Alternative for microscope
 } from "lucide-react";
 import { Table as UITable, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -150,7 +152,7 @@ export const ChatMessage = ({ isBot, content, className, apiKey, onResponse }: C
       if (section.includes('Condition:')) {
         return (
           <div key={index} className="text-xl font-bold mb-4 flex items-center gap-2">
-            <Stethoscope className="h-6 w-6 text-primary" />
+            <Stethoscope2 className="h-6 w-6 text-primary" />
             {section}
           </div>
         );
@@ -159,7 +161,7 @@ export const ChatMessage = ({ isBot, content, className, apiKey, onResponse }: C
         return (
           <div key={index} className="mb-4">
             <div className="flex items-center gap-2 mb-2">
-              <Microscope className="h-5 w-5 text-warning" />
+              <Flask className="h-5 w-5 text-warning" />
               <h3 className="text-lg font-semibold">{title}</h3>
             </div>
             <ul className="list-none space-y-2">
@@ -177,7 +179,7 @@ export const ChatMessage = ({ isBot, content, className, apiKey, onResponse }: C
         return (
           <div key={index} className="mb-4">
             <div className="flex items-center gap-2 mb-2">
-              <Table className="h-5 w-5 text-secondary" />
+              <Flask className="h-5 w-5 text-secondary" />
               <h3 className="text-lg font-semibold">{title}</h3>
             </div>
             <UITable>
