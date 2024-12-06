@@ -17,6 +17,7 @@ interface ChatMessageProps {
 export const ChatMessage = ({ isBot, content, className, apiKey, onResponse }: ChatMessageProps) => {
   const { toast } = useToast();
   const [isTranslating, setIsTranslating] = React.useState(false);
+  const [hasTranslated, setHasTranslated] = React.useState(false);
 
   const handleTranslate = async (language: string) => {
     if (!apiKey) {
@@ -34,6 +35,7 @@ export const ChatMessage = ({ isBot, content, className, apiKey, onResponse }: C
       if (onResponse) {
         onResponse(translatedContent);
       }
+      setHasTranslated(true);
       toast({
         title: `Translated to ${language}`,
         description: "Translation completed successfully.",
@@ -68,7 +70,7 @@ export const ChatMessage = ({ isBot, content, className, apiKey, onResponse }: C
       {isBot ? (
         <>
           {formatMedicalResponse(content)}
-          {isMedicalResponse && (
+          {isMedicalResponse && !hasTranslated && (
             <div className="relative">
               <ActionButtons
                 onTranslate={handleTranslate}
