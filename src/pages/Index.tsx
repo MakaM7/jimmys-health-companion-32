@@ -5,6 +5,7 @@ import { ApiKeyConfig } from "@/components/ApiKeyConfig";
 import { generateMedicalResponse } from "@/services/azureOpenAI";
 import { Heart } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { formatMedicalResponse } from "@/components/medical/MedicalResponseFormatter";
 
 interface Message {
   id: number;
@@ -87,7 +88,7 @@ const Index = () => {
               <ChatMessage
                 key={message.id}
                 isBot={message.isBot}
-                content={message.content}
+                content={message.isBot ? formatMedicalResponse(message.content) : message.content}
               />
             ))}
           </div>

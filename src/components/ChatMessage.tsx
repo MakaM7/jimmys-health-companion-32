@@ -1,8 +1,9 @@
 import { cn } from "@/lib/utils";
+import { ReactNode } from "react";
 
 interface ChatMessageProps {
   isBot: boolean;
-  content: string;
+  content: string | ReactNode;
   className?: string;
 }
 
