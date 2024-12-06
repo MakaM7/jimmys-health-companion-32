@@ -1,5 +1,14 @@
 import { cn } from "@/lib/utils";
-import { CircleDot, Pill, Microscope, Stethoscope, Table } from "lucide-react";
+import { 
+  CircleDot, 
+  Pill, 
+  Microscope, 
+  Stethoscope, 
+  Table, 
+  ShieldCheck, 
+  Leaf,
+  UserMd
+} from "lucide-react";
 import { Table as UITable, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 interface ChatMessageProps {
@@ -13,11 +22,29 @@ export const ChatMessage = ({ isBot, content, className }: ChatMessageProps) => 
   const formatMedicalResponse = (content: string) => {
     const sections = content.split('\n\n');
     return sections.map((section, index) => {
-      if (section.includes('🏥 Condition:')) {
+      if (section.includes('Condition:')) {
         return (
           <div key={index} className="text-xl font-bold mb-4 flex items-center gap-2">
-            <Stethoscope className="h-6 w-6" />
+            <Stethoscope className="h-6 w-6 text-primary" />
             {section}
+          </div>
+        );
+      } else if (section.includes('Common Causes:')) {
+        const [title, ...items] = section.split('\n');
+        return (
+          <div key={index} className="mb-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Microscope className="h-5 w-5 text-warning" />
+              <h3 className="text-lg font-semibold">{title}</h3>
+            </div>
+            <ul className="list-none space-y-2">
+              {items.map((item, i) => (
+                <li key={i} className="flex items-center gap-2 ml-4">
+                  <CircleDot className="h-4 w-4 text-primary-foreground/70" />
+                  {item.replace('• ', '')}
+                </li>
+              ))}
+            </ul>
           </div>
         );
       } else if (section.includes('Active Ingredients:')) {
@@ -25,7 +52,7 @@ export const ChatMessage = ({ isBot, content, className }: ChatMessageProps) => 
         return (
           <div key={index} className="mb-4">
             <div className="flex items-center gap-2 mb-2">
-              <Table className="h-5 w-5" />
+              <Table className="h-5 w-5 text-secondary" />
               <h3 className="text-lg font-semibold">{title}</h3>
             </div>
             <UITable>
@@ -49,12 +76,12 @@ export const ChatMessage = ({ isBot, content, className }: ChatMessageProps) => 
             </UITable>
           </div>
         );
-      } else if (section.startsWith('🔍')) {
+      } else if (section.includes('Recommended Medications:')) {
         const [title, ...items] = section.split('\n');
         return (
           <div key={index} className="mb-4">
             <div className="flex items-center gap-2 mb-2">
-              <Microscope className="h-5 w-5" />
+              <Pill className="h-5 w-5 text-[#9b87f5]" />
               <h3 className="text-lg font-semibold">{title}</h3>
             </div>
             <ul className="list-none space-y-2">
@@ -67,12 +94,48 @@ export const ChatMessage = ({ isBot, content, className }: ChatMessageProps) => 
             </ul>
           </div>
         );
-      } else if (section.startsWith('💊')) {
+      } else if (section.includes('Natural Alternatives:')) {
         const [title, ...items] = section.split('\n');
         return (
           <div key={index} className="mb-4">
             <div className="flex items-center gap-2 mb-2">
-              <Pill className="h-5 w-5" />
+              <Leaf className="h-5 w-5 text-[#50B3A2]" />
+              <h3 className="text-lg font-semibold">{title}</h3>
+            </div>
+            <ul className="list-none space-y-2">
+              {items.map((item, i) => (
+                <li key={i} className="flex items-center gap-2 ml-4">
+                  <CircleDot className="h-4 w-4 text-primary-foreground/70" />
+                  {item.replace('• ', '')}
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      } else if (section.includes('Prevention Guidelines:')) {
+        const [title, ...items] = section.split('\n');
+        return (
+          <div key={index} className="mb-4">
+            <div className="flex items-center gap-2 mb-2">
+              <ShieldCheck className="h-5 w-5 text-[#F97316]" />
+              <h3 className="text-lg font-semibold">{title}</h3>
+            </div>
+            <ul className="list-none space-y-2">
+              {items.map((item, i) => (
+                <li key={i} className="flex items-center gap-2 ml-4">
+                  <CircleDot className="h-4 w-4 text-primary-foreground/70" />
+                  {item.replace('• ', '')}
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      } else if (section.includes('Specialist Referral:')) {
+        const [title, ...items] = section.split('\n');
+        return (
+          <div key={index} className="mb-4">
+            <div className="flex items-center gap-2 mb-2">
+              <UserMd className="h-5 w-5 text-[#D946EF]" />
               <h3 className="text-lg font-semibold">{title}</h3>
             </div>
             <ul className="list-none space-y-2">
