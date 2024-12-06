@@ -1,30 +1,27 @@
 import { cn } from "@/lib/utils";
 import { 
   CircleDot, 
-  Pill, 
-  Microscope, 
-  Stethoscope, 
-  Table, 
+  Globe, 
   ShieldCheck, 
   Leaf,
   User,
   Utensils,
-  Globe,
   MapPin
 } from "lucide-react";
 import { Table as UITable, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { translateContent, analyzeNewSymptoms, getMorePreventionDetails, getMoreNaturalAlternatives, findSpecialist } from "@/services/gptPrompts";
+import { translateContent, getMorePreventionDetails, getMoreNaturalAlternatives, findSpecialist } from "@/services/gptPrompts";
 
 interface ChatMessageProps {
   isBot: boolean;
   content: string;
   className?: string;
   apiKey?: string;
+  onResponse?: (response: string) => void;
 }
 
-export const ChatMessage = ({ isBot, content, className, apiKey }: ChatMessageProps) => {
+export const ChatMessage = ({ isBot, content, className, apiKey, onResponse }: ChatMessageProps) => {
   const { toast } = useToast();
 
   const handleTranslate = async (language: string) => {
@@ -39,42 +36,17 @@ export const ChatMessage = ({ isBot, content, className, apiKey }: ChatMessagePr
 
     try {
       const translatedContent = await translateContent(content, language, apiKey);
+      if (onResponse) {
+        onResponse(translatedContent);
+      }
       toast({
         title: `Translated to ${language}`,
         description: "Translation completed successfully.",
       });
-      // Here you would update the UI with the translated content
-      console.log("Translated content:", translatedContent);
     } catch (error) {
       toast({
         title: "Translation Error",
         description: "Failed to translate the content.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleAnalyzeNewSymptoms = async () => {
-    if (!apiKey) {
-      toast({
-        title: "API Key Required",
-        description: "Please set your Azure OpenAI API key first.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      const newSymptoms = prompt("Please describe your new symptoms:");
-      if (newSymptoms) {
-        const analysis = await analyzeNewSymptoms(content, newSymptoms, apiKey);
-        // Here you would update the UI with the new analysis
-        console.log("New analysis:", analysis);
-      }
-    } catch (error) {
-      toast({
-        title: "Analysis Error",
-        description: "Failed to analyze new symptoms.",
         variant: "destructive",
       });
     }
@@ -92,8 +64,9 @@ export const ChatMessage = ({ isBot, content, className, apiKey }: ChatMessagePr
 
     try {
       const preventionDetails = await getMorePreventionDetails(content, apiKey);
-      // Here you would update the UI with the prevention details
-      console.log("Prevention details:", preventionDetails);
+      if (onResponse) {
+        onResponse(preventionDetails);
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -115,8 +88,9 @@ export const ChatMessage = ({ isBot, content, className, apiKey }: ChatMessagePr
 
     try {
       const alternatives = await getMoreNaturalAlternatives(content, apiKey);
-      // Here you would update the UI with the new alternatives
-      console.log("Natural alternatives:", alternatives);
+      if (onResponse) {
+        onResponse(alternatives);
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -148,8 +122,9 @@ export const ChatMessage = ({ isBot, content, className, apiKey }: ChatMessagePr
               },
               apiKey
             );
-            // Here you would update the UI with the specialist recommendations
-            console.log("Specialist recommendations:", specialists);
+            if (onResponse) {
+              onResponse(specialists);
+            }
           } catch (error) {
             toast({
               title: "Error",
@@ -334,15 +309,6 @@ export const ChatMessage = ({ isBot, content, className, apiKey }: ChatMessagePr
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="bg-gray-800/50 border-gray-700 hover:bg-gray-700/50"
-                onClick={handleAnalyzeNewSymptoms}
-              >
-                <Microscope className="mr-1" />
-                Analyze New Symptoms
-              </Button>
               <Button
                 variant="outline"
                 size="sm"

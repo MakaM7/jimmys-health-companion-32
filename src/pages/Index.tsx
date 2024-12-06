@@ -51,6 +51,13 @@ const Index = () => {
     }
   };
 
+  const handleAdditionalResponse = (response: string) => {
+    setMessages((prev) => [
+      ...prev,
+      { id: Date.now(), content: response, isBot: true },
+    ]);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex flex-col">
       <header className="bg-black/90 text-white p-4 shadow-lg">
@@ -70,6 +77,7 @@ const Index = () => {
                 isBot={message.isBot}
                 content={message.content}
                 apiKey={apiKey}
+                onResponse={handleAdditionalResponse}
               />
             ))}
           </div>
