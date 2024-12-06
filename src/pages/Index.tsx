@@ -23,7 +23,7 @@ const Index = () => {
     {
       id: 1,
       content:
-        "👋 Hello! I'm MediGuide, your personal health assistant. Please describe your symptoms in detail, and I'll help analyze them.",
+        "👋 Hello Jimmy! I'm MediGuide, your personal health assistant. Please describe your symptoms in detail, and I'll help analyze them.",
       isBot: true,
     },
   ]);
