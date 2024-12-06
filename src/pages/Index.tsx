@@ -21,7 +21,6 @@ const Index = () => {
   ]);
 
   const handleSendMessage = (content: string) => {
-    // Add user message
     setMessages((prev) => [
       ...prev,
       { id: Date.now(), content, isBot: false },
@@ -34,16 +33,16 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="bg-primary text-white p-4 shadow-md">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex flex-col">
+      <header className="bg-primary/90 backdrop-blur-sm text-white p-4 shadow-lg">
         <div className="container flex items-center gap-2">
-          <Heart className="h-6 w-6" />
+          <Heart className="h-6 w-6 animate-pulse" />
           <h1 className="text-xl font-bold">Jimmy's MediGuide</h1>
         </div>
       </header>
 
       <main className="container flex-1 py-6">
-        <div className="bg-white rounded-lg shadow-lg max-w-3xl mx-auto">
+        <div className="bg-white/40 backdrop-blur-md rounded-lg shadow-xl max-w-3xl mx-auto border border-white/50">
           <div className="h-[600px] overflow-y-auto p-4 space-y-4">
             {messages.map((message) => (
               <ChatMessage
