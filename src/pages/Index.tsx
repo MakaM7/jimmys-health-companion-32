@@ -2,7 +2,10 @@ import { useState } from "react";
 import { ChatMessage } from "@/components/ChatMessage";
 import { ChatInput } from "@/components/ChatInput";
 import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
+import { ApiKeyConfig } from "@/components/ApiKeyConfig";
+import { generateMedicalResponse } from "@/services/azureOpenAI";
 import { Heart } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 interface Message {
   id: number;
@@ -19,17 +22,34 @@ const Index = () => {
       isBot: true,
     },
   ]);
+  const [apiKey, setApiKey] = useState<string>("");
+  const { toast } = useToast();
 
-  const handleSendMessage = (content: string) => {
-    setMessages((prev) => [
-      ...prev,
-      { id: Date.now(), content, isBot: false },
-      {
-        id: Date.now() + 1,
-        content: "I'm analyzing your symptoms. Please note that this is a demo response and in a real implementation, this would connect to a medical AI model.",
-        isBot: true,
-      },
-    ]);
+  const handleSendMessage = async (content: string) => {
+    if (!apiKey) {
+      toast({
+        title: "API Key Required",
+        description: "Please set your Azure OpenAI API key first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setMessages((prev) => [...prev, { id: Date.now(), content, isBot: false }]);
+
+    try {
+      const response = await generateMedicalResponse(content, apiKey);
+      setMessages((prev) => [
+        ...prev,
+        { id: Date.now() + 1, content: response, isBot: true },
+      ]);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate response. Please check your API key and try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -43,6 +63,7 @@ const Index = () => {
 
       <main className="container flex-1 py-6">
         <div className="bg-white/40 backdrop-blur-md rounded-lg shadow-xl max-w-3xl mx-auto border border-white/50">
+          <ApiKeyConfig onApiKeySet={setApiKey} />
           <div className="h-[600px] overflow-y-auto p-4 space-y-4">
             {messages.map((message) => (
               <ChatMessage
