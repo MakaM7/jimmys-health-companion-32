@@ -15,6 +15,34 @@ interface ChatMessageProps {
 export const ChatMessage = ({ isBot, content, className, apiKey, onResponse }: ChatMessageProps) => {
   const { toast } = useToast();
 
+  const handleTranslate = async (language: string) => {
+    if (!apiKey) {
+      toast({
+        title: "API Key Required",
+        description: "Please set your Azure OpenAI API key first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const translatedContent = await translateContent(content, language, apiKey);
+      if (onResponse) {
+        onResponse(translatedContent);
+      }
+      toast({
+        title: `Translated to ${language}`,
+        description: "Translation completed successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Translation Error",
+        description: "Failed to translate the content.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleMorePrevention = async () => {
     if (!apiKey) {
       toast({
@@ -128,6 +156,7 @@ export const ChatMessage = ({ isBot, content, className, apiKey, onResponse }: C
           {formatMedicalResponse(content)}
           {isMedicalResponse && (
             <ActionButtons
+              onTranslate={handleTranslate}
               onMorePrevention={handleMorePrevention}
               onMoreAlternatives={handleMoreAlternatives}
               onFindSpecialist={handleFindSpecialist}
