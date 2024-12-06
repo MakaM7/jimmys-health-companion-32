@@ -80,6 +80,15 @@ const Index = () => {
         </div>
       </header>
 
+      <div className="container py-8">
+        <div className="bg-black/40 rounded-lg shadow-xl p-8 mb-6 border border-gray-700 animate-fade-in">
+          <h2 className="text-3xl font-bold text-white mb-4">👋 Hello Jimmy!</h2>
+          <p className="text-xl text-gray-300">
+            I'm MediGuide, your personal health assistant. Please describe your symptoms in detail, and I'll help analyze them.
+          </p>
+        </div>
+      </div>
+
       <main className="container flex-1 py-6 flex gap-6">
         <div className="bg-black/40 rounded-lg shadow-xl w-3/4 border border-gray-700">
           <ApiKeyConfig onApiKeySet={setApiKey} />
