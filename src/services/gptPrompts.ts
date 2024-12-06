@@ -1,9 +1,37 @@
 import { generateMedicalResponse } from './azureOpenAI';
 
 export const translateContent = async (content: string, language: string, apiKey: string) => {
-  // Extract sections from the original content
-  const sections = content.split('\n\n');
-  const translationPrompt = `Translate the following medical information to ${language}, maintaining the exact same format with sections for Condition, Common Causes, Active Ingredients, Natural Alternatives, Prevention Guidelines, and Specialist Referral. Keep all section headers in English but translate the content. Here's the content to translate:\n\n${content}`;
+  const translationPrompt = `
+Please translate the following medical information to ${language}. 
+IMPORTANT: The response MUST follow this exact format:
+
+Condition: [translated condition]
+
+Common Causes:
+• [translated cause 1]
+• [translated cause 2]
+...
+
+Active Ingredients:
+• [ingredient name] - [translated purpose]
+...
+
+Natural Alternatives:
+• [translated alternative 1]
+• [translated alternative 2]
+...
+
+Prevention Guidelines:
+• [translated guideline 1]
+• [translated guideline 2]
+...
+
+Specialist Referral:
+• [translated referral info]
+
+Here's the content to translate:
+
+${content}`;
   
   return generateMedicalResponse(translationPrompt, apiKey);
 };
