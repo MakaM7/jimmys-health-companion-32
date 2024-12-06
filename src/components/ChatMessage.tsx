@@ -7,7 +7,7 @@ import {
   Table, 
   ShieldCheck, 
   Leaf,
-  UserMd
+  User
 } from "lucide-react";
 import { Table as UITable, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -135,7 +135,7 @@ export const ChatMessage = ({ isBot, content, className }: ChatMessageProps) => 
         return (
           <div key={index} className="mb-4">
             <div className="flex items-center gap-2 mb-2">
-              <UserMd className="h-5 w-5 text-[#D946EF]" />
+              <User className="h-5 w-5 text-[#D946EF]" />
               <h3 className="text-lg font-semibold">{title}</h3>
             </div>
             <ul className="list-none space-y-2">
