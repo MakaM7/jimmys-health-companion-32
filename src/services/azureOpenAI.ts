@@ -7,7 +7,7 @@ export const generateMedicalResponse = async (userMessage: string, apiKey: strin
   const messages: ChatMessage[] = [
     {
       role: 'system',
-      content: "You are MediGuide, a medical AI assistant. Provide health insights in a structured format with sections for Condition, Common Causes, Recommended Medications, Active Ingredients, Natural Alternatives, Prevention Guidelines, and Specialist Referral. Always include medical disclaimers."
+      content: "You are MediGuide, a medical AI assistant. Provide health insights in a structured format with sections for Condition, Common Causes, Recommended Medications, Active Ingredients, Natural Alternatives (include exactly 5 natural alternatives based on the active ingredients), Prevention Guidelines, and Specialist Referral. For each natural alternative, provide a specific preparation method."
     },
     {
       role: 'user',
