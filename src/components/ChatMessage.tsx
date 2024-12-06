@@ -3,6 +3,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { translateContent } from "@/services/gptPrompts";
 import { ActionButtons } from "./medical/ActionButtons";
 import { formatMedicalResponse } from "./medical/MedicalResponseFormatter";
+import { Loader2 } from "lucide-react";
 
 interface ChatMessageProps {
   isBot: boolean;
@@ -14,6 +15,7 @@ interface ChatMessageProps {
 
 export const ChatMessage = ({ isBot, content, className, apiKey, onResponse }: ChatMessageProps) => {
   const { toast } = useToast();
+  const [isTranslating, setIsTranslating] = React.useState(false);
 
   const handleTranslate = async (language: string) => {
     if (!apiKey) {
@@ -25,6 +27,7 @@ export const ChatMessage = ({ isBot, content, className, apiKey, onResponse }: C
       return;
     }
 
+    setIsTranslating(true);
     try {
       const translatedContent = await translateContent(content, language, apiKey);
       if (onResponse) {
@@ -40,6 +43,8 @@ export const ChatMessage = ({ isBot, content, className, apiKey, onResponse }: C
         description: "Failed to translate the content.",
         variant: "destructive",
       });
+    } finally {
+      setIsTranslating(false);
     }
   };
 
@@ -63,9 +68,17 @@ export const ChatMessage = ({ isBot, content, className, apiKey, onResponse }: C
         <>
           {formatMedicalResponse(content)}
           {isMedicalResponse && (
-            <ActionButtons
-              onTranslate={handleTranslate}
-            />
+            <div className="relative">
+              <ActionButtons
+                onTranslate={handleTranslate}
+                disabled={isTranslating}
+              />
+              {isTranslating && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg">
+                  <Loader2 className="h-6 w-6 animate-spin text-white" />
+                </div>
+              )}
+            </div>
           )}
         </>
       ) : (
