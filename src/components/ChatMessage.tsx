@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
-import { translateContent, getMorePreventionDetails, getMoreNaturalAlternatives, findSpecialist } from "@/services/gptPrompts";
+import { translateContent } from "@/services/gptPrompts";
 import { ActionButtons } from "./medical/ActionButtons";
 import { formatMedicalResponse } from "./medical/MedicalResponseFormatter";
 
@@ -43,98 +43,6 @@ export const ChatMessage = ({ isBot, content, className, apiKey, onResponse }: C
     }
   };
 
-  const handleMorePrevention = async () => {
-    if (!apiKey) {
-      toast({
-        title: "API Key Required",
-        description: "Please set your Azure OpenAI API key first.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      const preventionDetails = await getMorePreventionDetails(content, apiKey);
-      if (onResponse) {
-        onResponse(preventionDetails);
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to get prevention details.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleMoreAlternatives = async () => {
-    if (!apiKey) {
-      toast({
-        title: "API Key Required",
-        description: "Please set your Azure OpenAI API key first.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      const alternatives = await getMoreNaturalAlternatives(content, apiKey);
-      if (onResponse) {
-        onResponse(alternatives);
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to get natural alternatives.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleFindSpecialist = async () => {
-    if (!apiKey) {
-      toast({
-        title: "API Key Required",
-        description: "Please set your Azure OpenAI API key first.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          try {
-            const specialists = await findSpecialist(
-              content,
-              {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-              },
-              apiKey
-            );
-            if (onResponse) {
-              onResponse(specialists);
-            }
-          } catch (error) {
-            toast({
-              title: "Error",
-              description: "Failed to get specialist recommendations.",
-              variant: "destructive",
-            });
-          }
-        },
-        (error) => {
-          toast({
-            title: "Location Error",
-            description: "Failed to get your location. Please enable location services.",
-            variant: "destructive",
-          });
-        }
-      );
-    }
-  };
-
   // Check if the content follows the medical response format
   const isMedicalResponse = content.includes('Condition:') || 
                           content.includes('Common Causes:') || 
@@ -157,9 +65,6 @@ export const ChatMessage = ({ isBot, content, className, apiKey, onResponse }: C
           {isMedicalResponse && (
             <ActionButtons
               onTranslate={handleTranslate}
-              onMorePrevention={handleMorePrevention}
-              onMoreAlternatives={handleMoreAlternatives}
-              onFindSpecialist={handleFindSpecialist}
             />
           )}
         </>
