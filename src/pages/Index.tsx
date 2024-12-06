@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { ChatMessage } from "@/components/ChatMessage";
 import { ChatInput } from "@/components/ChatInput";
-import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
 import { ApiKeyConfig } from "@/components/ApiKeyConfig";
 import { generateMedicalResponse } from "@/services/azureOpenAI";
 import { Heart } from "lucide-react";
@@ -18,7 +17,7 @@ const Index = () => {
     {
       id: 1,
       content:
-        "👋 Hello! I'm MediGuide, your personal health assistant. Please describe your symptoms in detail, and I'll help analyze them. Remember, my insights are informational and don't replace professional medical advice.",
+        "👋 Hello! I'm MediGuide, your personal health assistant. Please describe your symptoms in detail, and I'll help analyze them.",
       isBot: true,
     },
   ]);
@@ -74,7 +73,6 @@ const Index = () => {
             ))}
           </div>
           <ChatInput onSend={handleSendMessage} />
-          <MedicalDisclaimer />
         </div>
       </main>
     </div>
