@@ -6,7 +6,7 @@ import {
   Utensils,
   ShieldCheck,
   User,
-  Mortar,
+  Beaker,
 } from "lucide-react";
 import { Table as UITable, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -84,7 +84,7 @@ export const formatMedicalResponse = (content: string) => {
                 </div>
                 <div className="mt-2 p-3 bg-gray-900/50 rounded-md">
                   <div className="flex items-center gap-2 text-sm text-gray-300">
-                    <Mortar className="h-4 w-4" />
+                    <Beaker className="h-4 w-4" />
                     <span className="font-medium">Preparation Method:</span>
                   </div>
                   <p className="mt-1 text-sm text-gray-300 ml-6">
