@@ -3,9 +3,10 @@ import {
   Stethoscope, 
   Microscope,
   Leaf,
-  User,
   Utensils,
   ShieldCheck,
+  User,
+  Mortar,
 } from "lucide-react";
 import { Table as UITable, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -68,29 +69,33 @@ export const formatMedicalResponse = (content: string) => {
       );
     } else if (section.includes('Natural Alternatives:')) {
       const [title, ...items] = section.split('\n');
-      const preparations = [
-        "Steep in hot water for 10-15 minutes to make a therapeutic tea",
-        "Create a paste by grinding with a small amount of water",
-        "Infuse in carrier oil for 2-3 weeks in a dark place",
-        "Blend with honey to create a natural syrup",
-        "Make a compress by soaking cloth in strong infusion"
-      ];
       return (
         <div key={index} className="mb-4">
           <div className="flex items-center gap-2 mb-2">
             <Leaf className="h-5 w-5 text-[#50B3A2]" />
             <h3 className="text-lg font-semibold">{title}</h3>
           </div>
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {items.slice(0, 5).map((item, i) => (
-              <div key={i} className="ml-4 border-l-2 border-[#50B3A2] pl-4">
-                <div className="flex items-center gap-2">
-                  <CircleDot className="h-4 w-4 text-primary-foreground/70" />
+              <div key={i} className="bg-gray-800/50 rounded-lg p-4 border border-[#50B3A2]/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <Leaf className="h-4 w-4 text-[#50B3A2]" />
                   <span className="font-medium">{item.replace('• ', '')}</span>
                 </div>
-                <div className="flex items-center gap-2 mt-2 text-sm text-gray-300">
-                  <Utensils className="h-4 w-4" />
-                  <span>Preparation: {preparations[i]}</span>
+                <div className="mt-2 p-3 bg-gray-900/50 rounded-md">
+                  <div className="flex items-center gap-2 text-sm text-gray-300">
+                    <Mortar className="h-4 w-4" />
+                    <span className="font-medium">Preparation Method:</span>
+                  </div>
+                  <p className="mt-1 text-sm text-gray-300 ml-6">
+                    {[
+                      "Steep in hot water for 10-15 minutes to make a therapeutic tea",
+                      "Create a paste by grinding with a small amount of water",
+                      "Infuse in carrier oil for 2-3 weeks in a dark place",
+                      "Blend with honey to create a natural syrup",
+                      "Make a compress by soaking cloth in strong infusion"
+                    ][i]}
+                  </p>
                 </div>
               </div>
             ))}
