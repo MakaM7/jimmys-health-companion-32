@@ -13,6 +13,7 @@ export const ActionButtons = ({ onTranslate, disabled }: ActionButtonsProps) => 
         size="sm"
         onClick={() => onTranslate('French')}
         disabled={disabled}
+        className="bg-gray-100 text-gray-900 hover:bg-gray-200 hover:text-gray-900"
       >
         Translate to French
       </Button>
@@ -21,6 +22,7 @@ export const ActionButtons = ({ onTranslate, disabled }: ActionButtonsProps) => 
         size="sm"
         onClick={() => onTranslate('Arabic')}
         disabled={disabled}
+        className="bg-gray-100 text-gray-900 hover:bg-gray-200 hover:text-gray-900"
       >
         Translate to Arabic
       </Button>
