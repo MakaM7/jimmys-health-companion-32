@@ -12,6 +12,11 @@ interface Message {
   isBot: boolean;
 }
 
+interface Condition {
+  name: string;
+  timestamp: string;
+}
+
 const Index = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -21,8 +26,14 @@ const Index = () => {
       isBot: true,
     },
   ]);
+  const [conditions, setConditions] = useState<Condition[]>([]);
   const [apiKey, setApiKey] = useState<string>("");
   const { toast } = useToast();
+
+  const extractCondition = (content: string): string | null => {
+    const match = content.match(/Condition:\s*([^\n]+)/);
+    return match ? match[1].trim() : null;
+  };
 
   const handleSendMessage = async (content: string) => {
     if (!apiKey) {
@@ -42,6 +53,14 @@ const Index = () => {
         ...prev,
         { id: Date.now() + 1, content: response, isBot: true },
       ]);
+
+      const condition = extractCondition(response);
+      if (condition) {
+        setConditions(prev => [...prev, {
+          name: condition,
+          timestamp: new Date().toLocaleString()
+        }]);
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -49,13 +68,6 @@ const Index = () => {
         variant: "destructive",
       });
     }
-  };
-
-  const handleAdditionalResponse = (response: string) => {
-    setMessages((prev) => [
-      ...prev,
-      { id: Date.now(), content: response, isBot: true },
-    ]);
   };
 
   return (
@@ -67,8 +79,8 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="container flex-1 py-6">
-        <div className="bg-black/40 rounded-lg shadow-xl max-w-3xl mx-auto border border-gray-700">
+      <main className="container flex-1 py-6 flex gap-6">
+        <div className="bg-black/40 rounded-lg shadow-xl w-3/4 border border-gray-700">
           <ApiKeyConfig onApiKeySet={setApiKey} />
           <div className="h-[600px] overflow-y-auto p-4 space-y-4">
             {messages.map((message) => (
@@ -76,12 +88,22 @@ const Index = () => {
                 key={message.id}
                 isBot={message.isBot}
                 content={message.content}
-                apiKey={apiKey}
-                onResponse={handleAdditionalResponse}
               />
             ))}
           </div>
           <ChatInput onSend={handleSendMessage} />
+        </div>
+
+        <div className="w-1/4 bg-black/40 rounded-lg shadow-xl border border-gray-700 p-4">
+          <h2 className="text-white text-lg font-semibold mb-4">Analyzed Conditions History</h2>
+          <div className="space-y-3">
+            {conditions.map((condition, index) => (
+              <div key={index} className="bg-gray-800/50 p-3 rounded-lg border border-gray-700">
+                <p className="text-white font-medium">{condition.name}</p>
+                <p className="text-gray-400 text-sm">{condition.timestamp}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </main>
     </div>
