@@ -1,4 +1,6 @@
 import { cn } from "@/lib/utils";
+import { CircleDot, Pill, Microscope, Stethoscope, Table } from "lucide-react";
+import { Table as UITable, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 interface ChatMessageProps {
   isBot: boolean;
@@ -13,20 +15,72 @@ export const ChatMessage = ({ isBot, content, className }: ChatMessageProps) => 
     return sections.map((section, index) => {
       if (section.includes('🏥 Condition:')) {
         return (
-          <div key={index} className="text-xl font-bold mb-4">
+          <div key={index} className="text-xl font-bold mb-4 flex items-center gap-2">
+            <Stethoscope className="h-6 w-6" />
             {section}
           </div>
         );
-      } else if (section.startsWith('🔍') || section.startsWith('💊') || 
-                 section.startsWith('🧪') || section.startsWith('🌿') || 
-                 section.startsWith('⚕️') || section.startsWith('👨‍⚕️')) {
+      } else if (section.includes('Active Ingredients:')) {
+        const [title, ...ingredients] = section.split('\n');
+        return (
+          <div key={index} className="mb-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Table className="h-5 w-5" />
+              <h3 className="text-lg font-semibold">{title}</h3>
+            </div>
+            <UITable>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Ingredient</TableHead>
+                  <TableHead>Purpose</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {ingredients.map((item, i) => {
+                  const [ingredient, purpose] = item.replace('• ', '').split(' - ');
+                  return (
+                    <TableRow key={i}>
+                      <TableCell className="font-medium">{ingredient}</TableCell>
+                      <TableCell>{purpose}</TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </UITable>
+          </div>
+        );
+      } else if (section.startsWith('🔍')) {
         const [title, ...items] = section.split('\n');
         return (
           <div key={index} className="mb-4">
-            <h3 className="text-lg font-semibold mb-2">{title}</h3>
-            <ul className="list-disc list-inside space-y-1">
+            <div className="flex items-center gap-2 mb-2">
+              <Microscope className="h-5 w-5" />
+              <h3 className="text-lg font-semibold">{title}</h3>
+            </div>
+            <ul className="list-none space-y-2">
               {items.map((item, i) => (
-                <li key={i} className="ml-4">{item.replace('• ', '')}</li>
+                <li key={i} className="flex items-center gap-2 ml-4">
+                  <CircleDot className="h-4 w-4 text-primary-foreground/70" />
+                  {item.replace('• ', '')}
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      } else if (section.startsWith('💊')) {
+        const [title, ...items] = section.split('\n');
+        return (
+          <div key={index} className="mb-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Pill className="h-5 w-5" />
+              <h3 className="text-lg font-semibold">{title}</h3>
+            </div>
+            <ul className="list-none space-y-2">
+              {items.map((item, i) => (
+                <li key={i} className="flex items-center gap-2 ml-4">
+                  <CircleDot className="h-4 w-4 text-primary-foreground/70" />
+                  {item.replace('• ', '')}
+                </li>
               ))}
             </ul>
           </div>
