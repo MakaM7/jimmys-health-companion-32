@@ -14,43 +14,156 @@ import {
 } from "lucide-react";
 import { Table as UITable, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { translateContent, analyzeNewSymptoms, getMorePreventionDetails, getMoreNaturalAlternatives, findSpecialist } from "@/services/gptPrompts";
 
 interface ChatMessageProps {
   isBot: boolean;
   content: string;
   className?: string;
+  apiKey?: string;
 }
 
-export const ChatMessage = ({ isBot, content, className }: ChatMessageProps) => {
-  const handleTranslate = (language: string) => {
-    console.log(`Translating to ${language}`);
-    // Translation logic would go here
+export const ChatMessage = ({ isBot, content, className, apiKey }: ChatMessageProps) => {
+  const { toast } = useToast();
+
+  const handleTranslate = async (language: string) => {
+    if (!apiKey) {
+      toast({
+        title: "API Key Required",
+        description: "Please set your Azure OpenAI API key first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const translatedContent = await translateContent(content, language, apiKey);
+      toast({
+        title: `Translated to ${language}`,
+        description: "Translation completed successfully.",
+      });
+      // Here you would update the UI with the translated content
+      console.log("Translated content:", translatedContent);
+    } catch (error) {
+      toast({
+        title: "Translation Error",
+        description: "Failed to translate the content.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleAnalyzeNewSymptoms = () => {
-    console.log("Analyzing new symptoms");
-    // New symptoms analysis logic would go here
+  const handleAnalyzeNewSymptoms = async () => {
+    if (!apiKey) {
+      toast({
+        title: "API Key Required",
+        description: "Please set your Azure OpenAI API key first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const newSymptoms = prompt("Please describe your new symptoms:");
+      if (newSymptoms) {
+        const analysis = await analyzeNewSymptoms(content, newSymptoms, apiKey);
+        // Here you would update the UI with the new analysis
+        console.log("New analysis:", analysis);
+      }
+    } catch (error) {
+      toast({
+        title: "Analysis Error",
+        description: "Failed to analyze new symptoms.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleMorePrevention = () => {
-    console.log("Getting more prevention details");
-    // Prevention details logic would go here
+  const handleMorePrevention = async () => {
+    if (!apiKey) {
+      toast({
+        title: "API Key Required",
+        description: "Please set your Azure OpenAI API key first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const preventionDetails = await getMorePreventionDetails(content, apiKey);
+      // Here you would update the UI with the prevention details
+      console.log("Prevention details:", preventionDetails);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to get prevention details.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleMoreAlternatives = () => {
-    console.log("Getting more natural alternatives");
-    // Natural alternatives logic would go here
+  const handleMoreAlternatives = async () => {
+    if (!apiKey) {
+      toast({
+        title: "API Key Required",
+        description: "Please set your Azure OpenAI API key first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const alternatives = await getMoreNaturalAlternatives(content, apiKey);
+      // Here you would update the UI with the new alternatives
+      console.log("Natural alternatives:", alternatives);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to get natural alternatives.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleFindSpecialist = () => {
+  const handleFindSpecialist = async () => {
+    if (!apiKey) {
+      toast({
+        title: "API Key Required",
+        description: "Please set your Azure OpenAI API key first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          console.log("Location:", position.coords.latitude, position.coords.longitude);
-          // Specialist finding logic would go here using coordinates
+        async (position) => {
+          try {
+            const specialists = await findSpecialist(
+              content,
+              {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+              },
+              apiKey
+            );
+            // Here you would update the UI with the specialist recommendations
+            console.log("Specialist recommendations:", specialists);
+          } catch (error) {
+            toast({
+              title: "Error",
+              description: "Failed to get specialist recommendations.",
+              variant: "destructive",
+            });
+          }
         },
         (error) => {
-          console.error("Error getting location:", error);
+          toast({
+            title: "Location Error",
+            description: "Failed to get your location. Please enable location services.",
+            variant: "destructive",
+          });
         }
       );
     }

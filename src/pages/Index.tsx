@@ -69,6 +69,7 @@ const Index = () => {
                 key={message.id}
                 isBot={message.isBot}
                 content={message.content}
+                apiKey={apiKey}
               />
             ))}
           </div>
