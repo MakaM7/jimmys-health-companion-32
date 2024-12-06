@@ -8,9 +8,12 @@ import {
   ShieldCheck, 
   Leaf,
   User,
-  Utensils
+  Utensils,
+  Globe,
+  MapPin
 } from "lucide-react";
 import { Table as UITable, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 
 interface ChatMessageProps {
   isBot: boolean;
@@ -19,6 +22,40 @@ interface ChatMessageProps {
 }
 
 export const ChatMessage = ({ isBot, content, className }: ChatMessageProps) => {
+  const handleTranslate = (language: string) => {
+    console.log(`Translating to ${language}`);
+    // Translation logic would go here
+  };
+
+  const handleAnalyzeNewSymptoms = () => {
+    console.log("Analyzing new symptoms");
+    // New symptoms analysis logic would go here
+  };
+
+  const handleMorePrevention = () => {
+    console.log("Getting more prevention details");
+    // Prevention details logic would go here
+  };
+
+  const handleMoreAlternatives = () => {
+    console.log("Getting more natural alternatives");
+    // Natural alternatives logic would go here
+  };
+
+  const handleFindSpecialist = () => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          console.log("Location:", position.coords.latitude, position.coords.longitude);
+          // Specialist finding logic would go here using coordinates
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+        }
+      );
+    }
+  };
+
   const formatMedicalResponse = (content: string) => {
     const sections = content.split('\n\n');
     return sections.map((section, index) => {
@@ -159,7 +196,73 @@ export const ChatMessage = ({ isBot, content, className }: ChatMessageProps) => 
         className
       )}
     >
-      {isBot ? formatMedicalResponse(content) : content}
+      {isBot ? (
+        <>
+          {formatMedicalResponse(content)}
+          <div className="mt-6 space-y-3">
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-gray-800/50 border-gray-700 hover:bg-gray-700/50"
+                onClick={() => handleTranslate("arabic")}
+              >
+                <Globe className="mr-1" />
+                Translate to Arabic
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-gray-800/50 border-gray-700 hover:bg-gray-700/50"
+                onClick={() => handleTranslate("french")}
+              >
+                <Globe className="mr-1" />
+                Translate to French
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-gray-800/50 border-gray-700 hover:bg-gray-700/50"
+                onClick={handleAnalyzeNewSymptoms}
+              >
+                <Microscope className="mr-1" />
+                Analyze New Symptoms
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-gray-800/50 border-gray-700 hover:bg-gray-700/50"
+                onClick={handleMorePrevention}
+              >
+                <ShieldCheck className="mr-1" />
+                More Prevention Details
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-gray-800/50 border-gray-700 hover:bg-gray-700/50"
+                onClick={handleMoreAlternatives}
+              >
+                <Leaf className="mr-1" />
+                More Natural Alternatives
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-gray-800/50 border-gray-700 hover:bg-gray-700/50"
+                onClick={handleFindSpecialist}
+              >
+                <MapPin className="mr-1" />
+                Find Specialist Near Me
+              </Button>
+            </div>
+          </div>
+        </>
+      ) : (
+        content
+      )}
     </div>
   );
 };
