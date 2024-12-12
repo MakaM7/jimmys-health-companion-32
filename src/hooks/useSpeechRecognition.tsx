@@ -2,18 +2,18 @@ import { useState, useEffect, useCallback } from 'react';
 
 interface UseSpeechRecognitionProps {
   onTranscriptChange: (transcript: string) => void;
-  triggerWord?: string;
-  onTriggerWordDetected?: (transcript: string) => void;
+  onMessageDetected?: (message: string) => void;
 }
 
 export const useSpeechRecognition = ({
   onTranscriptChange,
-  triggerWord = "jimmy",
-  onTriggerWordDetected,
+  onMessageDetected,
 }: UseSpeechRecognitionProps) => {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [recognition, setRecognition] = useState<any>(null);
+  const [isRecordingMessage, setIsRecordingMessage] = useState(false);
+  const [currentMessage, setCurrentMessage] = useState("");
 
   const startListening = useCallback(() => {
     if ('webkitSpeechRecognition' in window) {
@@ -35,8 +35,27 @@ export const useSpeechRecognition = ({
         setTranscript(currentTranscript);
         onTranscriptChange(currentTranscript);
 
-        if (currentTranscript.toLowerCase().includes(triggerWord.toLowerCase())) {
-          onTriggerWordDetected?.(currentTranscript);
+        const lowerTranscript = currentTranscript.toLowerCase();
+        
+        if (lowerTranscript.includes('jimmy') && !isRecordingMessage) {
+          setIsRecordingMessage(true);
+          setCurrentMessage("");
+          console.log("Started recording message after 'jimmy'");
+        }
+        
+        if (isRecordingMessage && lowerTranscript.includes('finish')) {
+          const messageStart = lowerTranscript.lastIndexOf('jimmy') + 5;
+          const messageEnd = lowerTranscript.lastIndexOf('finish');
+          if (messageStart < messageEnd) {
+            const message = currentTranscript.slice(messageStart, messageEnd).trim();
+            console.log("Message detected:", message);
+            onMessageDetected?.(message);
+            setIsRecordingMessage(false);
+            setCurrentMessage("");
+          }
+        } else if (isRecordingMessage) {
+          const messageStart = lowerTranscript.lastIndexOf('jimmy') + 5;
+          setCurrentMessage(currentTranscript.slice(messageStart).trim());
         }
       };
 
@@ -44,7 +63,6 @@ export const useSpeechRecognition = ({
         console.error('Speech recognition error:', event.error);
         if (event.error !== 'aborted') {
           setIsListening(false);
-          // Only restart if it wasn't manually aborted
           setTimeout(() => {
             startListening();
           }, 1000);
@@ -54,7 +72,6 @@ export const useSpeechRecognition = ({
       recognition.onend = () => {
         console.log("Speech recognition ended");
         setIsListening(false);
-        // Restart recognition after a short delay
         setTimeout(() => {
           if (recognition) {
             recognition.start();
@@ -67,7 +84,7 @@ export const useSpeechRecognition = ({
     } else {
       console.error('Speech recognition not supported');
     }
-  }, [onTranscriptChange, triggerWord, onTriggerWordDetected]);
+  }, [onTranscriptChange, onMessageDetected, isRecordingMessage]);
 
   useEffect(() => {
     return () => {
@@ -81,5 +98,7 @@ export const useSpeechRecognition = ({
     isListening,
     transcript,
     startListening,
+    isRecordingMessage,
+    currentMessage,
   };
 };
