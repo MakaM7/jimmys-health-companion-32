@@ -8,7 +8,7 @@ interface UseSpeechRecognitionProps {
 
 export const useSpeechRecognition = ({
   onTranscriptChange,
-  triggerWord = "symptoms",
+  triggerWord = "jimmy",
   onTriggerWordDetected,
 }: UseSpeechRecognitionProps) => {
   const [isListening, setIsListening] = useState(false);

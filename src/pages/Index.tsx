@@ -78,6 +78,10 @@ const Index = () => {
 
   const { transcript, startListening, isListening } = useSpeechRecognition({
     onTranscriptChange: (text) => {
+      setInputValue(text);
+    },
+    triggerWord: "jimmy",
+    onTriggerWordDetected: (text) => {
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
       }
@@ -87,10 +91,6 @@ const Index = () => {
           handleSendMessage(text);
         }
       }, 10000);
-    },
-    triggerWord: "symptoms",
-    onTriggerWordDetected: (text) => {
-      setInputValue(text);
     },
   });
 
@@ -108,7 +108,7 @@ const Index = () => {
       startListening();
       toast({
         title: "Speech Recognition Active",
-        description: "Say 'symptoms' to start dictating your message.",
+        description: "Say 'jimmy' to start dictating your message.",
       });
     }
   };
