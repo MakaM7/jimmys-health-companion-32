@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ChatMessage } from "@/components/ChatMessage";
 import { ChatInput } from "@/components/ChatInput";
 import { ApiKeyConfig } from "@/components/ApiKeyConfig";
 import { generateMedicalResponse } from "@/services/azureOpenAI";
-import { Heart } from "lucide-react";
+import { Heart, Mic } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { formatMedicalResponse } from "@/components/medical/MedicalResponseFormatter";
+import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 
 interface Message {
   id: number;
@@ -30,6 +31,8 @@ const Index = () => {
   const [conditions, setConditions] = useState<Condition[]>([]);
   const [apiKey, setApiKey] = useState<string>("");
   const { toast } = useToast();
+  const [inputValue, setInputValue] = useState("");
+  const typingTimeoutRef = useRef<NodeJS.Timeout>();
 
   const extractCondition = (content: string): string | null => {
     const match = content.match(/Condition:\s*([^\n]+)/);
@@ -71,6 +74,36 @@ const Index = () => {
     }
   };
 
+  const { transcript, startListening } = useSpeechRecognition({
+    onTranscriptChange: (text) => {
+      // Clear any existing timeout
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+
+      // Set a new timeout
+      typingTimeoutRef.current = setTimeout(() => {
+        if (text.trim()) {
+          handleSendMessage(text);
+        }
+      }, 10000);
+    },
+    triggerWord: "symptoms",
+    onTriggerWordDetected: (text) => {
+      setInputValue(text);
+    },
+  });
+
+  useEffect(() => {
+    if (apiKey) {
+      startListening();
+      toast({
+        title: "Speech Recognition Active",
+        description: "Say 'symptoms' to start dictating your message.",
+      });
+    }
+  }, [apiKey, startListening]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex flex-col">
       <header className="bg-black/90 text-white p-4 shadow-lg">
@@ -101,18 +134,30 @@ const Index = () => {
               />
             ))}
           </div>
-          <ChatInput onSend={handleSendMessage} />
+          <ChatInput onSend={handleSendMessage} value={inputValue} onChange={setInputValue} />
         </div>
 
-        <div className="w-1/4 bg-black/40 rounded-lg shadow-xl border border-gray-700 p-4">
-          <h2 className="text-white text-lg font-semibold mb-4">Analyzed Conditions History</h2>
-          <div className="space-y-3">
-            {conditions.map((condition, index) => (
-              <div key={index} className="bg-gray-800/50 p-3 rounded-lg border border-gray-700">
-                <p className="text-white font-medium">{condition.name}</p>
-                <p className="text-gray-400 text-sm">{condition.timestamp}</p>
-              </div>
-            ))}
+        <div className="w-1/4 space-y-4">
+          <div className="bg-black/40 rounded-lg shadow-xl border border-gray-700 p-4">
+            <div className="flex items-center gap-2 mb-4">
+              <Mic className={`h-5 w-5 ${transcript ? 'text-green-500' : 'text-gray-500'}`} />
+              <h2 className="text-white text-lg font-semibold">Speech Recognition</h2>
+            </div>
+            <div className="bg-gray-800/50 p-3 rounded-lg border border-gray-700">
+              <p className="text-gray-300 text-sm">{transcript || "Listening..."}</p>
+            </div>
+          </div>
+
+          <div className="bg-black/40 rounded-lg shadow-xl border border-gray-700 p-4">
+            <h2 className="text-white text-lg font-semibold mb-4">Analyzed Conditions History</h2>
+            <div className="space-y-3">
+              {conditions.map((condition, index) => (
+                <div key={index} className="bg-gray-800/50 p-3 rounded-lg border border-gray-700">
+                  <p className="text-white font-medium">{condition.name}</p>
+                  <p className="text-gray-400 text-sm">{condition.timestamp}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </main>

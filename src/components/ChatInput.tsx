@@ -1,28 +1,27 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send } from "lucide-react";
 
 interface ChatInputProps {
   onSend: (message: string) => void;
+  value?: string;
+  onChange?: (value: string) => void;
 }
 
-export const ChatInput = ({ onSend }: ChatInputProps) => {
-  const [message, setMessage] = useState("");
-
+export const ChatInput = ({ onSend, value, onChange }: ChatInputProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (message.trim()) {
-      onSend(message);
-      setMessage("");
+    if (value?.trim()) {
+      onSend(value);
+      onChange?.("");
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="flex gap-2 p-4 border-t border-gray-700">
       <Input
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
+        value={value || ""}
+        onChange={(e) => onChange?.(e.target.value)}
         placeholder="Describe your symptoms..."
         className="flex-1 bg-gray-900/80 border-gray-700 text-white transition-all duration-300 hover:shadow-md focus:shadow-lg"
       />
