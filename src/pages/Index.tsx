@@ -76,20 +76,21 @@ const Index = () => {
     }
   };
 
-  const {
-    transcript,
-    startListening,
-    isListening,
-    isRecordingMessage,
-    currentMessage,
-  } = useSpeechRecognition({
+  const { transcript, startListening, isListening } = useSpeechRecognition({
     onTranscriptChange: (text) => {
-      console.log("Transcript updated:", text);
+      setInputValue(text);
     },
-    onMessageDetected: (message) => {
-      if (message.trim()) {
-        handleSendMessage(message);
+    triggerWord: "jimmy",
+    onTriggerWordDetected: (text) => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
       }
+
+      typingTimeoutRef.current = setTimeout(() => {
+        if (text.trim()) {
+          handleSendMessage(text);
+        }
+      }, 10000);
     },
   });
 
@@ -102,11 +103,12 @@ const Index = () => {
       });
       return;
     }
+    setIsSpeechEnabled(!isSpeechEnabled);
     if (!isListening) {
       startListening();
       toast({
         title: "Speech Recognition Active",
-        description: "Say 'Jimmy' to start recording, 'Finish' to send the message.",
+        description: "Say 'jimmy' to start dictating your message.",
       });
     }
   };
@@ -160,18 +162,8 @@ const Index = () => {
                 {isListening ? "Stop" : "Start"}
               </Button>
             </div>
-            <div className="space-y-3">
-              <div className="bg-gray-800/50 p-3 rounded-lg border border-gray-700">
-                <p className="text-gray-300 text-sm">
-                  {transcript || "Click Start to begin listening..."}
-                </p>
-              </div>
-              {isRecordingMessage && (
-                <div className="bg-gray-800/50 p-3 rounded-lg border border-green-700">
-                  <p className="text-green-400 text-sm font-medium">Recording message:</p>
-                  <p className="text-gray-300 text-sm">{currentMessage}</p>
-                </div>
-              )}
+            <div className="bg-gray-800/50 p-3 rounded-lg border border-gray-700">
+              <p className="text-gray-300 text-sm">{transcript || "Click Start to begin listening..."}</p>
             </div>
           </div>
 
