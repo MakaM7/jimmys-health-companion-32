@@ -3,10 +3,11 @@ import { ChatMessage } from "@/components/ChatMessage";
 import { ChatInput } from "@/components/ChatInput";
 import { ApiKeyConfig } from "@/components/ApiKeyConfig";
 import { generateMedicalResponse } from "@/services/azureOpenAI";
-import { Heart, Mic } from "lucide-react";
+import { Heart, Mic, MicOff } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { formatMedicalResponse } from "@/components/medical/MedicalResponseFormatter";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
+import { Button } from "@/components/ui/button";
 
 interface Message {
   id: number;
@@ -33,6 +34,7 @@ const Index = () => {
   const { toast } = useToast();
   const [inputValue, setInputValue] = useState("");
   const typingTimeoutRef = useRef<NodeJS.Timeout>();
+  const [isSpeechEnabled, setIsSpeechEnabled] = useState(false);
 
   const extractCondition = (content: string): string | null => {
     const match = content.match(/Condition:\s*([^\n]+)/);
@@ -74,14 +76,12 @@ const Index = () => {
     }
   };
 
-  const { transcript, startListening } = useSpeechRecognition({
+  const { transcript, startListening, isListening } = useSpeechRecognition({
     onTranscriptChange: (text) => {
-      // Clear any existing timeout
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
       }
 
-      // Set a new timeout
       typingTimeoutRef.current = setTimeout(() => {
         if (text.trim()) {
           handleSendMessage(text);
@@ -94,15 +94,24 @@ const Index = () => {
     },
   });
 
-  useEffect(() => {
-    if (apiKey) {
+  const toggleSpeechRecognition = () => {
+    if (!apiKey) {
+      toast({
+        title: "API Key Required",
+        description: "Please set your Azure OpenAI API key first.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setIsSpeechEnabled(!isSpeechEnabled);
+    if (!isListening) {
       startListening();
       toast({
         title: "Speech Recognition Active",
         description: "Say 'symptoms' to start dictating your message.",
       });
     }
-  }, [apiKey, startListening]);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex flex-col">
@@ -139,12 +148,22 @@ const Index = () => {
 
         <div className="w-1/4 space-y-4">
           <div className="bg-black/40 rounded-lg shadow-xl border border-gray-700 p-4">
-            <div className="flex items-center gap-2 mb-4">
-              <Mic className={`h-5 w-5 ${transcript ? 'text-green-500' : 'text-gray-500'}`} />
-              <h2 className="text-white text-lg font-semibold">Speech Recognition</h2>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Mic className={`h-5 w-5 ${isListening ? 'text-green-500' : 'text-gray-500'}`} />
+                <h2 className="text-white text-lg font-semibold">Speech Recognition</h2>
+              </div>
+              <Button
+                variant={isListening ? "destructive" : "default"}
+                size="sm"
+                onClick={toggleSpeechRecognition}
+              >
+                {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                {isListening ? "Stop" : "Start"}
+              </Button>
             </div>
             <div className="bg-gray-800/50 p-3 rounded-lg border border-gray-700">
-              <p className="text-gray-300 text-sm">{transcript || "Listening..."}</p>
+              <p className="text-gray-300 text-sm">{transcript || "Click Start to begin listening..."}</p>
             </div>
           </div>
 
